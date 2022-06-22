@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 public class DrenchedGameManager : MonoBehaviour
@@ -9,11 +10,19 @@ public class DrenchedGameManager : MonoBehaviour
 
     public List<DrenchedTile> owned = new List<DrenchedTile>();
     public Image[] buttons;
+
+    public TMP_Text triesText;
+    public int tries;
+
+    public GameObject loosePanel;
+    public GameObject winPanel;
+
     private void Awake()
     {
         instance = this;
+        triesText.text = tries.ToString();
 
-        for(int i = 0; i < buttons.Length; i++)
+        for (int i = 0; i < buttons.Length; i++)
         {
             buttons[i].color = colors[i];
         }
@@ -21,6 +30,9 @@ public class DrenchedGameManager : MonoBehaviour
 
     public void SetNeighbours(int color)
     {
+        tries--;
+        triesText.text = tries.ToString();
+
         List<DrenchedTile> newTiles = new List<DrenchedTile>();
 
         foreach (DrenchedTile dt in owned)
@@ -60,5 +72,19 @@ public class DrenchedGameManager : MonoBehaviour
                 }
             }
         }
+
+        if (CheckWin())
+        {
+            winPanel.SetActive(true);
+        }
+        else if(tries == 0)
+        {
+            loosePanel.SetActive(true);
+        }
+    }
+
+    private bool CheckWin()
+    {
+        return owned.Count == DrenchedGridCreator.instance.gridSize * DrenchedGridCreator.instance.gridSize;
     }
 }
